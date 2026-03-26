@@ -183,7 +183,20 @@ p.subtitle { font-family: 'Space Mono', monospace; font-size: 13px; color: #6B72
     border: 2px solid #D6DCE4 !important;
     border-radius: 8px !important;
     font-family: 'Space Mono', monospace !important;
+    color: #1A1A1A !important;
 }
+
+textarea, input::placeholder {
+    color: #1A1A1A !important;
+    -webkit-text-fill-color: #1A1A1A !important; /* Dành cho trình duyệt Safari/Chrome */
+    opacity: 1 !important;
+}
+
+.block-label {
+    color: #1A1A1A !important;
+    font-weight: bold !important;
+}
+
 button.primary { background: #1A1A1A !important; color: #FFF !important; border-radius: 30px !important; font-weight: bold !important; }
 """
 
