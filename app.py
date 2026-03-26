@@ -197,27 +197,45 @@ textarea, input::placeholder {
     font-weight: bold !important;
 }
 
+.tabs button {
+    color: #6B7280 !important; 
+    font-weight: bold !important;
+}
+
+.tabs button.selected {
+    color: #1A1A1A !important; 
+    border-bottom: 2px solid #6594B1 !important; 
+}
+
+.tabs button:hover {
+    background-color: #6594B1 !important;
+    color: #1A1A1A !important; 
+}
+.tabs + div {
+    border: 1px solid #6594B1 !important;
+    background-color: #FFFFFF !important;
+    border-radius: 0 0 8px 8px !important;
+}
+
 button.primary { background: #1A1A1A !important; color: #FFF !important; border-radius: 30px !important; font-weight: bold !important; }
 """
 
 
-
-# HTML trang trí bằng icon (Đã xoá sạch các mặt người cam kỳ lạ)
 welcome_html = f"""
 <img class="scrapbook-item" 
-     style="top: 120%; left: 5%; transform: rotate(5deg); width: 100px;" 
+     style="top: 120%; left: 5%; width: 100px;" 
      src="{PIC1}">
 
 <img class="scrapbook-item" 
-     style="bottom: 100%; left: 28%; transform: rotate(15deg); width: 85px;" 
+     style="bottom: 100%; left: 28%; width: 85px;" 
      src="{PIC2}">
 
 <img class="scrapbook-item" 
-     style="bottom: 50%; left: 70%; transform: rotate(5deg); width: 100px;" 
+     style="bottom: 50%; left: 70%; width: 100px;" 
      src="{PIC3}">
 
 <img class="scrapbook-item" 
-     style="bottom: 100%; left: 47%; width: 100px;" 
+     style="bottom: 100%; left: 47%; width: 140px;" 
      src="{PIC4}">
      
 <img class="scrapbook-item" 
@@ -271,7 +289,7 @@ with gr.Blocks(theme=gr.themes.Base(), css=custom_css) as demo:
         
         gr.HTML("<h1>Visual Question Answering</h1><p class='subtitle'>AI-Powered Image Analysis System</p>")
         
-        with gr.Tab("Dataset Evaluation (Offline)"):
+        with gr.Tab("Dataset Evaluation"):
             with gr.Row():
                 with gr.Column(scale=1):
                     dropdown = gr.Dropdown(choices=image_keys[:50], label="Select Image ID", value=image_keys[0] if image_keys else None)
@@ -282,7 +300,7 @@ with gr.Blocks(theme=gr.themes.Base(), css=custom_css) as demo:
                     ans_gem = gr.Textbox(label="AI Model Answer", lines=5)
             dropdown.change(fn=evaluate_offline, inputs=dropdown, outputs=[img_off, q_off, ans_exp, ans_gem])
 
-        with gr.Tab("Live Camera Demo"):
+        with gr.Tab("Live Camera"):
             with gr.Row():
                 with gr.Column(scale=1):
                     img_live = gr.Image(type="pil", sources=["webcam", "upload"], label="Upload or Capture Image")
