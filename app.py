@@ -154,7 +154,7 @@ body, .gradio-container {
 
 .bottom-block {
     position: absolute;
-    bottom: -300px; /* Giảm từ 30px xuống 10px hoặc 5px */
+    top: 250px; /* Giảm từ 30px xuống 10px hoặc 5px */
     left: 30px;
     right: 30px;
     display: flex;
@@ -218,6 +218,8 @@ textarea, input::placeholder {
 }
 
 button.primary { background: #1A1A1A !important; color: #FFF !important; border-radius: 30px !important; font-weight: bold !important; }
+
+#welcome-wrapper.hide { display: none !important; }
 """
 
 
@@ -260,10 +262,67 @@ welcome_html = f"""
 # JS Text-to-Speech
 js_tts = """
 function() {
-    let msg = new SpeechSynthesisUtterance("Welcome to Our ... . This is a Visual Question Answering system powered by AI. Upload any image, ask a question, and get a detailed answer instantly. Click Enter App to start the Visual Question Answering system.");
+    let text = "Welcome to Our Project. This is a Visual Question Answering system powered by AI. Upload any image, ask a question, and get a detailed answer instantly. If you want to enter the main page to ask a question, please press the spacebar or click the mouse.";
+    let msg = new SpeechSynthesisUtterance(text);
     msg.lang = 'en-US';
     msg.rate = 0.9;
+    
+    let voices = window.speechSynthesis.getVoices();
+    // Tìm các giọng nữ phổ biến trên Chrome, Windows và Mac
+    let femaleVoice = voices.find(v => v.name.includes('Google US English') || v.name.includes('Zira') || v.name.includes('Samantha'));
+    if (femaleVoice) msg.voice = femaleVoice;
+    
     window.speechSynthesis.speak(msg);
+}
+"""
+
+onload_js = """
+function() {
+    // Biến toàn cục để tránh bị trình duyệt tự động ngắt tiếng (Garbage Collection)
+    window.welcomeSpeech = null;
+    let hasSpoken = false;
+
+    // Hàm mồi để tải trước danh sách giọng nói (sửa lỗi đặc trưng của Google Chrome)
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = function() {
+        window.speechSynthesis.getVoices();
+    };
+
+    function playAudioOnFirstTouch(e) {
+        // Chỉ đọc 1 lần duy nhất
+        if (hasSpoken) return;
+
+        let text = "Welcome to Our Project. This is a Visual Question Answering system powered by AI. Upload any image, ask a question, and get a detailed answer instantly. If you want to enter the main page to ask a question, please press the spacebar or click the mouse.";
+        
+        window.welcomeSpeech = new SpeechSynthesisUtterance(text);
+        window.welcomeSpeech.lang = 'en-US';
+        window.welcomeSpeech.rate = 0.9;
+        
+        let voices = window.speechSynthesis.getVoices();
+        let femaleVoice = voices.find(v => v.name.includes('Google US English') || v.name.includes('Zira') || v.name.includes('Samantha') || v.name.includes('Female'));
+        if (femaleVoice) window.welcomeSpeech.voice = femaleVoice;
+        
+        // Phát âm thanh
+        window.speechSynthesis.speak(window.welcomeSpeech);
+        hasSpoken = true;
+
+        // Đọc xong thì gỡ bỏ sự kiện này để không bị đọc lại khi click chỗ khác
+        document.removeEventListener('click', playAudioOnFirstTouch);
+        document.removeEventListener('keydown', playAudioOnFirstTouch);
+    }
+
+    // Lắng nghe BẤT KỲ tương tác nào (chuột hoặc phím) để phát tiếng
+    document.addEventListener('click', playAudioOnFirstTouch);
+    document.addEventListener('keydown', playAudioOnFirstTouch);
+
+    // Xử lý riêng phím Space để bấm nút "Enter App"
+    document.addEventListener('keydown', function(e) {
+        if (e.code === 'Space' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            let btnEnter = document.querySelector('#btn-enter');
+            if (btnEnter) btnEnter.click();
+        }
+    });
 }
 """
 
@@ -312,7 +371,10 @@ with gr.Blocks(theme=gr.themes.Base(), css=custom_css) as demo:
 
     # Sự kiện chuyển màn hình
     btn_enter.click(fn=go_to_main, inputs=None, outputs=[welcome_col, main_col])
-    btn_back.click(fn=go_to_welcome, inputs=None, outputs=[welcome_col, main_col])
+    btn_back.click(fn=go_to_welcome, inputs=None, outputs=[welcome_col, main_col], js=onload_js)
+
+    # Chạy sự kiện khi vừa tải xong trang
+    demo.load(fn=None, js=onload_js)
 
 # Sửa launch — truyền thư mục chứa ảnh vào allowed_paths
 if __name__ == "__main__":
