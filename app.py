@@ -9,7 +9,7 @@ from PIL import Image
 # ==========================================
 # 1. CẤU HÌNH API
 # ==========================================
-API_KEY = "YOUR_API_KEY_HERE" # Nhớ thay mã của bạn vào
+API_KEY = "AIzaSyDrYly88zb-vzscaLBPpU5m5328LGuK5AM" # Nhớ thay mã của bạn vào
 client = genai.Client(api_key=API_KEY)
 
 # ==========================================
@@ -51,7 +51,7 @@ def live_demo(image, question):
     if image is None: return "Vui lòng tải ảnh."
     prompt = f"Question: {question}. Provide a detailed answer. If blurry, say 'I cannot answer'."
     try:
-        response = client.models.generate_content(model='gemini-2.0-flash', contents=[prompt, image])
+        response = client.models.generate_content(model='gemini-3.1-flash-lite-preview', contents=[prompt, image])
         return response.text
     except Exception as e:
         return f"Lỗi API: {str(e)}"
