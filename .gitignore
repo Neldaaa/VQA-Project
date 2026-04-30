@@ -1,0 +1,26 @@
+﻿# Virtual Environment
+venv/
+env/
+.venv
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large files
+*.pth
+*.pt
+models/evssm_weights/
